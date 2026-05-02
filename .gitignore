@@ -1,0 +1,16 @@
+# Build trees
+build/
+
+
+# Local preset overrides (machine-specific, never committed)
+CMakeUserPresets.json
+
+# Editors
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# macOS
+.DS_Store
