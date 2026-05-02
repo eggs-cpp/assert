@@ -10,14 +10,17 @@ cmake_minimum_required(VERSION 3.23)
 project(Eggs.Assert C CXX)
 
 if(PROJECT_IS_TOP_LEVEL)
+    option(BUILD_EXAMPLE "Build the example" ON)
     option(ENABLE_INSTALL "Enable installing the library" ON)
 
     set(CMAKE_CXX_STANDARD 23)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
 else()
+    option(EGGS_ASSERT_BUILD_EXAMPLE "Build the example" OFF)
     option(EGGS_ASSERT_ENABLE_INSTALL "Enable installing the library" OFF)
 
+    set(BUILD_EXAMPLE ${EGGS_ASSERT_BUILD_EXAMPLE})
     set(ENABLE_INSTALL ${EGGS_ASSERT_ENABLE_INSTALL})
 endif()
 
@@ -41,6 +44,12 @@ set_target_properties(_eggs_assert
         EXPORT_NAME Eggs::Assert)
 
 add_library(Eggs::Assert ALIAS _eggs_assert)
+
+# Example
+
+if(BUILD_EXAMPLE)
+    add_subdirectory(example)
+endif()
 
 # Install
 
