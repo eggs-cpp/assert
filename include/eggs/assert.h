@@ -9,20 +9,20 @@
 // that the effect of NDEBUG can be changed between successive inclusions.
 
 #ifdef assert
-#  undef assert
+#    undef assert
 #endif
 
 #ifdef NDEBUG
 
-#  define assert(...) ((void)0)
+#    define assert(...) ((void)0)
 
 #else
 
-#ifdef __cplusplus
+#    ifdef __cplusplus
 extern "C" [[noreturn]] void eggs_assert_failed(char const* message);
-#else
+#    else
 _Noreturn void eggs_assert_failed(char const* message);
-#endif
+#    endif
 
 //! `assert` puts a diagnostic test into programs and expands to an expression
 //! of type `void`. `__VA_ARGS__` is evaluated and _contextually converted to
@@ -30,7 +30,7 @@ _Noreturn void eggs_assert_failed(char const* message);
 //! - If the evaluation yields `true`, there are no further effects.
 //! - Otherwise, `assert` creates a diagnostic on the standard error stream
 //!   and calls `std::abort()`.
-#  define assert(...)                                                         \
-       ((__VA_ARGS__) ? (void)0 : eggs_assert_failed(#__VA_ARGS__))
+#    define assert(...) \
+        ((__VA_ARGS__) ? (void)0 : eggs_assert_failed(#__VA_ARGS__))
 
 #endif // NDEBUG

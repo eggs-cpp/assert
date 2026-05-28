@@ -6,7 +6,6 @@ build/
 CMakeUserPresets.json
 
 # Editors
-.vs/
 .vscode/
 .idea/
 *.user
