@@ -7,7 +7,32 @@
 
 #include <eggs/assert.h>
 
+namespace foo::bar {
+namespace {
+
+void validate()
+{
+    assert(false && "invariant violated");
+}
+} // namespace
+
+void process(int value, char const* name)
+{
+    validate();
+}
+
+} // namespace foo::bar
+
+#ifdef _MSC_VER
+#    include <cstdlib>
+#endif
+
 int main()
 {
-    assert(false && "message here");
+#ifdef _MSC_VER
+    // Suppress blocking MSVC debug error dialog.
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
+
+    foo::bar::process(42, "example");
 }
