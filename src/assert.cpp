@@ -34,14 +34,12 @@ extern "C" [[noreturn]] EGGS_ASSERT_EXPORT void eggs_assert_failed(
     char const* message, char const* file, unsigned line, char const* function
 )
 {
-    println("ASSERTION FAILURE:");
-    println("- file   : {}", file);
-    println("- line   : {}", line);
-    println("- context: {}", function);
-    println("- message: {}\n", message);
+    println("ASSERTION FAILURE: {}", message);
+    println("- path    : {}:{}", file, line);
+    println("- function: {}", function);
 
 #ifdef __cpp_lib_stacktrace
-    println("STACK TRACE:");
+    println("\nSTACK TRACE:");
     auto const trace = std::stacktrace::current(1);
     for (auto const& entry : trace) {
         println("{}", std::to_string(entry));
