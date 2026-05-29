@@ -5,7 +5,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.25)
 project(
     Eggs.Assert
     DESCRIPTION "A C++23 assert library with stacktrace"
@@ -23,6 +23,10 @@ if(PROJECT_IS_TOP_LEVEL)
     set(CMAKE_C_VISIBILITY_PRESET hidden)
     set(CMAKE_CXX_VISIBILITY_PRESET hidden)
     set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+
+    set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
+        "$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>"
+    )
 
     option(BUILD_EXAMPLE "Build the example" ON)
     option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
@@ -51,6 +55,14 @@ set_target_properties(
     _eggs_assert
     PROPERTIES EXPORT_NAME Assert OUTPUT_NAME eggs_assert
 )
+if(MSVC)
+    set_target_properties(
+        _eggs_assert
+        PROPERTIES
+            COMPILE_PDB_NAME "eggs_assert"
+            COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>"
+    )
+endif()
 target_compile_features(_eggs_assert PUBLIC cxx_std_23)
 
 include(GenerateExportHeader)
@@ -99,6 +111,24 @@ if(ENABLE_INSTALL)
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
+
+    if(MSVC)
+        if(BUILD_SHARED_LIBS)
+            install(
+                FILES "$<TARGET_PDB_FILE:_eggs_assert>"
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
+                CONFIGURATIONS Debug RelWithDebInfo
+                OPTIONAL
+            )
+        else()
+            install(
+                FILES "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/eggs_assert.pdb"
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Debug RelWithDebInfo
+                OPTIONAL
+            )
+        endif()
+    endif()
 
     install(
         EXPORT EggsAssertTargets
