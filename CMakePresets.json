@@ -75,6 +75,19 @@
       }
     },
     {
+      "name": "dev-clang-cl",
+      "displayName": "Clang-CL x64",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      },
+      "environment": {
+        "CFLAGS": "/clang:-ffile-prefix-map=${sourceDir}=.",
+        "CXXFLAGS": "/clang:-ffile-prefix-map=${sourceDir}=."
+      }
+    },
+    {
       "name": "asan",
       "displayName": "ASan + UBSan / Clang",
       "inherits": "dev-clang"
