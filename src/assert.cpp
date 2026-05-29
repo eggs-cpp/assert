@@ -29,21 +29,19 @@ void println(std::format_string<Args...> fmt, Args&&... args)
 
 } // namespace
 
-extern "C" [[noreturn]] void eggs_assert_failed(char const* message)
+extern "C" [[noreturn]] void eggs_assert_failed(
+    char const* message, char const* file, unsigned line, char const* function
+)
 {
     println("ASSERTION FAILURE:");
-
-#ifdef __cpp_lib_stacktrace
-    auto const trace = std::stacktrace::current(1);
-    if (!trace.empty()) {
-        auto const& top = trace[0];
-        println("- file   : {}", top.source_file());
-        println("- line   : {}", top.source_line());
-        println("- context: {}", top.description());
-    }
+    println("- file   : {}", file);
+    println("- line   : {}", line);
+    println("- context: {}", function);
     println("- message: {}\n", message);
 
+#ifdef __cpp_lib_stacktrace
     println("STACK TRACE:");
+    auto const trace = std::stacktrace::current(1);
     for (auto const& entry : trace) {
         println("{}", std::to_string(entry));
     }

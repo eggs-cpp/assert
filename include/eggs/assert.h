@@ -19,9 +19,13 @@
 #else
 
 #    ifdef __cplusplus
-extern "C" [[noreturn]] void eggs_assert_failed(char const* message);
+extern "C" [[noreturn]] void eggs_assert_failed(
+    char const* message, char const* file, unsigned line, char const* function
+);
 #    else
-_Noreturn void eggs_assert_failed(char const* message);
+_Noreturn void eggs_assert_failed(
+    char const* message, char const* file, unsigned line, char const* function
+);
 #    endif
 
 //! `assert` puts a diagnostic test into programs and expands to an expression
@@ -30,7 +34,33 @@ _Noreturn void eggs_assert_failed(char const* message);
 //! - If the evaluation yields `true`, there are no further effects.
 //! - Otherwise, `assert` creates a diagnostic on the standard error stream
 //!   and calls `std::abort()`.
-#    define assert(...) \
-        ((__VA_ARGS__) ? (void)0 : eggs_assert_failed(#__VA_ARGS__))
+
+#    ifdef __cplusplus
+#        include <source_location>
+
+#        define assert(...)                                              \
+            ((__VA_ARGS__)                                               \
+                 ? (void)0                                               \
+                 : ::eggs_assert_failed(                                 \
+                       #__VA_ARGS__,                                     \
+                       std::source_location::current().file_name(),      \
+                       (unsigned)std::source_location::current().line(), \
+                       std::source_location::current().function_name()   \
+                   ))
+#    elif __has_builtin(__builtin_FILE)
+#        define assert(...)                                             \
+            ((__VA_ARGS__)                                              \
+                 ? (void)0                                              \
+                 : eggs_assert_failed(                                  \
+                       #__VA_ARGS__, __builtin_FILE(),                  \
+                       (unsigned)__builtin_LINE(), __builtin_FUNCTION() \
+                   ))
+#    else
+#        define assert(...)                                                 \
+            ((__VA_ARGS__) ? (void)0                                        \
+                           : eggs_assert_failed(                            \
+                                 #__VA_ARGS__, __FILE__, __LINE__, __func__ \
+                             ))
+#    endif
 
 #endif // NDEBUG
