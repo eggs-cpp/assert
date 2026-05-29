@@ -28,6 +28,10 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++"
+      },
+      "environment": {
+        "CFLAGS": "-ffile-prefix-map=\"${sourceDir}\"=.",
+        "CXXFLAGS": "-ffile-prefix-map=\"${sourceDir}\"=."
       }
     },
     {
@@ -37,15 +41,23 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
+      },
+      "environment": {
+        "CFLAGS": "-ffile-prefix-map=\"${sourceDir}\"=.",
+        "CXXFLAGS": "-ffile-prefix-map=\"${sourceDir}\"=."
       }
     },
     {
       "name": "dev-clang-libcxx",
       "displayName": "Clang + libc++",
       "inherits": "dev-clang",
-      "cacheVariables": {},
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      },
       "environment": {
-        "CXXFLAGS": "-stdlib=libc++",
+        "CFLAGS": "-ffile-prefix-map=\"${sourceDir}\"=.",
+        "CXXFLAGS": "-stdlib=libc++ -ffile-prefix-map=\"${sourceDir}\"=.",
         "LDFLAGS": "-stdlib=libc++"
       }
     },
@@ -56,6 +68,10 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl"
+      },
+      "environment": {
+        "CFLAGS": "/d1trimfile:\"${sourceDir}\"",
+        "CXXFLAGS": "/d1trimfile:\"${sourceDir}\""
       }
     },
     {
