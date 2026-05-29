@@ -18,12 +18,14 @@
 
 #else
 
+#    include <eggs/assert-export.h>
+
 #    ifdef __cplusplus
-extern "C" [[noreturn]] void eggs_assert_failed(
+extern "C" [[noreturn]] EGGS_ASSERT_EXPORT void eggs_assert_failed(
     char const* message, char const* file, unsigned line, char const* function
 );
 #    else
-_Noreturn void eggs_assert_failed(
+EGGS_ASSERT_EXPORT _Noreturn void eggs_assert_failed(
     char const* message, char const* file, unsigned line, char const* function
 );
 #    endif

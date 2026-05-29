@@ -25,27 +25,53 @@ if(PROJECT_IS_TOP_LEVEL)
     set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
     option(BUILD_EXAMPLE "Build the example" ON)
+    option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
     option(ENABLE_INSTALL "Generate install rules" ON)
 else()
     option(EGGS_ASSERT_BUILD_EXAMPLE "Build the example" OFF)
+    option(
+        EGGS_ASSERT_BUILD_SHARED_LIBS
+        "Build as a shared library"
+        ${BUILD_SHARED_LIBS}
+    )
     option(EGGS_ASSERT_ENABLE_INSTALL "Generate install rules" OFF)
 
     # Map prefixed options back to the canonical names used below
     set(BUILD_EXAMPLE ${EGGS_ASSERT_BUILD_EXAMPLE})
+    set(BUILD_SHARED_LIBS ${EGGS_ASSERT_BUILD_SHARED_LIBS})
     set(ENABLE_INSTALL ${EGGS_ASSERT_ENABLE_INSTALL})
 endif()
 
 #
-# Library target — static library.
+# Library target — static or shared depending on BUILD_SHARED_LIBS.
 # Internal name _eggs_assert; downstream CMake code uses the alias Eggs::Assert.
 #
-add_library(_eggs_assert STATIC src/assert.cpp)
+add_library(_eggs_assert src/assert.cpp)
+set_target_properties(
+    _eggs_assert
+    PROPERTIES EXPORT_NAME Assert OUTPUT_NAME eggs_assert
+)
+target_compile_features(_eggs_assert PUBLIC cxx_std_23)
+
+include(GenerateExportHeader)
+generate_export_header(
+    _eggs_assert
+    BASE_NAME EGGS_ASSERT
+    EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/include/eggs/assert-export.h"
+)
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(_eggs_assert PUBLIC EGGS_ASSERT_STATIC_DEFINE)
+endif()
+
 target_sources(
     _eggs_assert
-    PUBLIC FILE_SET HEADERS BASE_DIRS include FILES include/eggs/assert.h
+    PUBLIC
+        FILE_SET HEADERS
+            BASE_DIRS include "${CMAKE_CURRENT_BINARY_DIR}/include"
+            FILES
+                include/eggs/assert.h
+                "${CMAKE_CURRENT_BINARY_DIR}/include/eggs/assert-export.h"
 )
-set_target_properties(_eggs_assert PROPERTIES EXPORT_NAME Assert)
-target_compile_features(_eggs_assert PUBLIC cxx_std_23)
 
 include(Cxx23Stacktrace)
 target_link_libraries(_eggs_assert PUBLIC ${EGGS_CXX23_STACKTRACE_LIB})
@@ -70,6 +96,8 @@ if(ENABLE_INSTALL)
         EXPORT EggsAssertTargets
         FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 
     install(
