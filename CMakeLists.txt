@@ -8,6 +8,7 @@
 cmake_minimum_required(VERSION 3.25)
 project(
     Eggs.Assert
+    VERSION 1.0.0
     DESCRIPTION "A C++23 assert library with stacktrace"
     LANGUAGES C CXX
 )
@@ -146,7 +147,7 @@ if(ENABLE_INSTALL)
 
     write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/eggs.assert-config-version.cmake
-        VERSION 1.0.0
+        VERSION ${PROJECT_VERSION}
         COMPATIBILITY SameMajorVersion
     )
 
@@ -156,4 +157,15 @@ if(ENABLE_INSTALL)
             ${CMAKE_CURRENT_BINARY_DIR}/eggs.assert-config-version.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/eggs.assert
     )
+
+    set(CPACK_PACKAGE_NAME "Eggs.Assert")
+    set(CPACK_PACKAGE_VENDOR "Agustin K-ballo Berge, Fusion Fenix")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+    if(WIN32)
+        set(CPACK_GENERATOR ZIP)
+    else()
+        set(CPACK_GENERATOR TGZ)
+    endif()
+    include(CPack)
 endif()
