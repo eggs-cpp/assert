@@ -83,6 +83,7 @@ target_sources(
             BASE_DIRS include "${CMAKE_CURRENT_BINARY_DIR}/include"
             FILES
                 include/eggs/assert.h
+                include/eggs/assert.hpp
                 "${CMAKE_CURRENT_BINARY_DIR}/include/eggs/assert-export.h"
 )
 
