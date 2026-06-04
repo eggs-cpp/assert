@@ -153,20 +153,6 @@ jobs:
       - name: Build (static, Release)
         run: cmake --build build/${{ matrix.preset }}-static --config Release
 
-      - name: Package (static)
-        working-directory: build/${{ matrix.preset }}-static
-        run: cpack -C Release
-
-      - name: Upload package (static)
-        uses: actions/upload-artifact@v6
-        with:
-          name: package-${{ matrix.compiler }}-static
-          path: |
-            build/${{ matrix.preset }}-static/Eggs.Assert-*.tar.gz
-            build/${{ matrix.preset }}-static/Eggs.Assert-*.zip
-          if-no-files-found: error
-          retention-days: 7
-
       # -----------------------------------------------------------------------
       # Shared library build
       # -----------------------------------------------------------------------
@@ -186,20 +172,6 @@ jobs:
 
       - name: Build (shared, Release)
         run: cmake --build build/${{ matrix.preset }}-shared --config Release
-
-      - name: Package (shared)
-        working-directory: build/${{ matrix.preset }}-shared
-        run: cpack -C Release
-
-      - name: Upload package (shared)
-        uses: actions/upload-artifact@v6
-        with:
-          name: package-${{ matrix.compiler }}-shared
-          path: |
-            build/${{ matrix.preset }}-shared/Eggs.Assert-*.tar.gz
-            build/${{ matrix.preset }}-shared/Eggs.Assert-*.zip
-          if-no-files-found: error
-          retention-days: 7
 
       # -----------------------------------------------------------------------
       # FetchContent variant — simulates embedding via FetchContent_MakeAvailable
