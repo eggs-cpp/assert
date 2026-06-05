@@ -13,6 +13,7 @@ jobs:
   build:
     name: ${{ matrix.os }} / ${{ matrix.compiler }}
     runs-on: ${{ matrix.os }}
+    if: ${{ !github.event.repository.fork }}
 
     strategy:
       fail-fast: false
