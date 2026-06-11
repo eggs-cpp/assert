@@ -21,7 +21,10 @@ find_package(Eggs.Assert REQUIRED)
 # Verification target — links against the imported target and runs.
 # -------------------------------------------------------------------------
 add_executable(consumer_verify main.cpp)
-target_link_libraries(consumer_verify PRIVATE Eggs::Assert)
+target_link_libraries(
+    consumer_verify
+    PRIVATE Eggs::Assert Eggs::Assert::SuppressAbortDialog
+)
 
 get_target_property(_assert_type Eggs::Assert TYPE)
 if(_assert_type STREQUAL "SHARED_LIBRARY")

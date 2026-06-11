@@ -33,7 +33,10 @@ FetchContent_MakeAvailable(Eggs.Assert)
 # Verification target — links against the FetchContent target and runs.
 # -------------------------------------------------------------------------
 add_executable(consumer_verify main.cpp)
-target_link_libraries(consumer_verify PRIVATE Eggs::Assert)
+target_link_libraries(
+    consumer_verify
+    PRIVATE Eggs::Assert Eggs::Assert::SuppressAbortDialog
+)
 
 get_target_property(_assert_type Eggs::Assert TYPE)
 if(_assert_type STREQUAL "SHARED_LIBRARY")

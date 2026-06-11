@@ -7,4 +7,7 @@
 
 add_executable(eggs_assert_example main.cpp)
 
-target_link_libraries(eggs_assert_example PRIVATE Eggs::Assert)
+target_link_libraries(
+    eggs_assert_example
+    PRIVATE Eggs::Assert Eggs::Assert::SuppressAbortDialog
+)

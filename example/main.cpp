@@ -23,16 +23,7 @@ void process(int value, char const* name)
 
 } // namespace foo::bar
 
-#ifdef _MSC_VER
-#    include <cstdlib>
-#endif
-
 int main()
 {
-#ifdef _MSC_VER
-    // Suppress blocking MSVC debug error dialog.
-    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-#endif
-
     foo::bar::process(42, "example");
 }

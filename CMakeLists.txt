@@ -92,6 +92,8 @@ target_link_libraries(_eggs_assert PUBLIC ${EGGS_CXX23_STACKTRACE_LIB})
 
 add_library(Eggs::Assert ALIAS _eggs_assert)
 
+add_subdirectory(support)
+
 #
 # Example
 #
@@ -109,7 +111,6 @@ if(ENABLE_INSTALL)
         TARGETS _eggs_assert
         EXPORT EggsAssertTargets
         FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
