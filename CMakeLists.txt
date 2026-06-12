@@ -29,12 +29,12 @@ if(PROJECT_IS_TOP_LEVEL)
         "$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>"
     )
 
-    option(BUILD_EXAMPLE "Build the example" ON)
+    option(BUILD_EXAMPLES "Build the examples" ON)
     option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
     include(CTest)
     option(ENABLE_INSTALL "Generate install rules" ON)
 else()
-    option(EGGS_ASSERT_BUILD_EXAMPLE "Build the example" OFF)
+    option(EGGS_ASSERT_BUILD_EXAMPLES "Build the examples" OFF)
     option(
         EGGS_ASSERT_BUILD_SHARED_LIBS
         "Build as a shared library"
@@ -44,7 +44,7 @@ else()
     option(EGGS_ASSERT_ENABLE_INSTALL "Generate install rules" OFF)
 
     # Map prefixed options back to the canonical names used below
-    set(BUILD_EXAMPLE ${EGGS_ASSERT_BUILD_EXAMPLE})
+    set(BUILD_EXAMPLES ${EGGS_ASSERT_BUILD_EXAMPLES})
     set(BUILD_SHARED_LIBS ${EGGS_ASSERT_BUILD_SHARED_LIBS})
     set(BUILD_TESTING ${EGGS_ASSERT_BUILD_TESTING})
     set(ENABLE_INSTALL ${EGGS_ASSERT_ENABLE_INSTALL})
@@ -98,12 +98,35 @@ target_link_libraries(_eggs_assert PUBLIC ${EGGS_CXX23_STACKTRACE_LIB})
 
 add_library(Eggs::Assert ALIAS _eggs_assert)
 
+add_library(_eggs_assert_intercept INTERFACE)
+set_target_properties(
+    _eggs_assert_intercept
+    PROPERTIES
+        EXPORT_NAME Assert::Intercept
+        VERIFY_INTERFACE_HEADER_SETS ${BUILD_TESTING}
+)
+
+target_link_libraries(_eggs_assert_intercept INTERFACE _eggs_assert)
+target_compile_definitions(
+    _eggs_assert_intercept
+    INTERFACE EGGS_ASSERT_INTERCEPT_ASSERT_H
+)
+target_include_directories(
+    _eggs_assert_intercept
+    SYSTEM
+    BEFORE
+    INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/eggs>
+        $<INSTALL_INTERFACE:include/eggs>
+)
+add_library(Eggs::Assert::Intercept ALIAS _eggs_assert_intercept)
+
 add_subdirectory(support)
 
 #
 # Example
 #
-if(BUILD_EXAMPLE)
+if(BUILD_EXAMPLES)
     add_subdirectory(example)
 endif()
 
@@ -121,7 +144,7 @@ if(ENABLE_INSTALL)
     include(CMakePackageConfigHelpers)
 
     install(
-        TARGETS _eggs_assert
+        TARGETS _eggs_assert _eggs_assert_intercept
         EXPORT EggsAssertTargets
         FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

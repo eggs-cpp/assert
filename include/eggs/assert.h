@@ -8,6 +8,14 @@
 // No include guard: assert.h is intentionally designed to be re-includable so
 // that the effect of NDEBUG can be changed between successive inclusions.
 
+#ifdef EGGS_ASSERT_INTERCEPT_ASSERT_H
+#    ifdef _MSC_VER
+#        include <../ucrt/assert.h>
+#    else
+#        include_next <assert.h>
+#    endif
+#endif
+
 #ifdef assert
 #    undef assert
 #endif

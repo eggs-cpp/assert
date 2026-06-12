@@ -63,23 +63,7 @@ function(add_lib_test name)
         PRIVATE Eggs::Assert Eggs::Assert::SuppressAbortDialog
     )
 
-    get_target_property(_type _eggs_assert TYPE)
-    if(_type STREQUAL "SHARED_LIBRARY")
-        if(WIN32)
-            add_custom_command(
-                TARGET ${name}
-                POST_BUILD
-                COMMAND
-                    ${CMAKE_COMMAND} -E copy_if_different
-                    $<TARGET_FILE:_eggs_assert> $<TARGET_FILE_DIR:${name}>
-            )
-        else()
-            set_target_properties(
-                ${name}
-                PROPERTIES BUILD_RPATH "$<TARGET_FILE_DIR:_eggs_assert>"
-            )
-        endif()
-    endif()
+    _eggs_assert_setup_shared(${name})
     add_test(
         NAME eggs.assert.${name}
         ${_configurations}
@@ -122,23 +106,7 @@ target_link_libraries(
     PRIVATE Eggs::Assert Eggs::Assert::SuppressAbortDialog
 )
 
-get_target_property(_type _eggs_assert TYPE)
-if(_type STREQUAL "SHARED_LIBRARY")
-    if(WIN32)
-        add_custom_command(
-            TARGET assert_h_c
-            POST_BUILD
-            COMMAND
-                ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_FILE:_eggs_assert> $<TARGET_FILE_DIR:assert_h_c>
-        )
-    else()
-        set_target_properties(
-            assert_h_c
-            PROPERTIES BUILD_RPATH "$<TARGET_FILE_DIR:_eggs_assert>"
-        )
-    endif()
-endif()
+_eggs_assert_setup_shared(assert_h_c)
 
 add_test(
     NAME eggs.assert.assert_h_c

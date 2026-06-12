@@ -34,6 +34,29 @@ add_library(
     ALIAS _eggs_assert_suppress_abort_dialog
 )
 
+# Ensures the eggs_assert DLL is findable at runtime for the given target.
+function(_eggs_assert_setup_shared target)
+    get_target_property(_type _eggs_assert TYPE)
+    if(NOT _type STREQUAL "SHARED_LIBRARY")
+        return()
+    endif()
+
+    if(WIN32)
+        add_custom_command(
+            TARGET ${target}
+            POST_BUILD
+            COMMAND
+                ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:_eggs_assert> $<TARGET_FILE_DIR:${target}>
+        )
+    else()
+        set_target_properties(
+            ${target}
+            PROPERTIES BUILD_RPATH "$<TARGET_FILE_DIR:_eggs_assert>"
+        )
+    endif()
+endfunction()
+
 #
 # Install rules
 #
