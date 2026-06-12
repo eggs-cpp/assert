@@ -5,7 +5,12 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#pragma once
+// No include guard: assert.hpp is intentionally designed to be re-includable
+// so that the effect of NDEBUG can be changed between successive inclusions.
+
+#ifdef EGGS_ASSERT
+#    undef EGGS_ASSERT
+#endif
 
 #ifdef NDEBUG
 

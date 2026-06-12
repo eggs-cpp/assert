@@ -91,6 +91,14 @@ function(add_lib_test name)
     set_tests_properties(eggs.assert.${name} PROPERTIES LABELS "unit")
 endfunction()
 
+# ── Re-includability ──────────────────────────────────────────────────────────
+
+add_lib_test(reinclusion_h_disable)
+add_lib_test(reinclusion_h_enable WILL_CRASH 1)
+
+add_lib_test(reinclusion_hpp_disable)
+add_lib_test(reinclusion_hpp_enable WILL_CRASH 1)
+
 # ── Pass / fail ───────────────────────────────────────────────────────────────
 
 add_lib_test(assert_pass)
