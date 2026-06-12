@@ -18,6 +18,7 @@
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "CMAKE_LINK_WARNING_AS_ERROR": "ON",
         "BUILD_EXAMPLE": "ON",
+        "BUILD_TESTING": "ON",
         "ENABLE_INSTALL": "ON"
       }
     },
@@ -70,7 +71,7 @@
         "CMAKE_CXX_COMPILER": "cl"
       },
       "environment": {
-        "CFLAGS": "/d1trimfile:\"${sourceDir}\"",
+        "CFLAGS": "/std:c11 /d1trimfile:\"${sourceDir}\"",
         "CXXFLAGS": "/d1trimfile:\"${sourceDir}\""
       }
     },
@@ -85,19 +86,6 @@
       "environment": {
         "CFLAGS": "/clang:-ffile-prefix-map=${sourceDir}=.",
         "CXXFLAGS": "/clang:-ffile-prefix-map=${sourceDir}=."
-      }
-    },
-    {
-      "name": "asan",
-      "displayName": "ASan + UBSan / Clang",
-      "inherits": "dev-clang"
-    },
-    {
-      "name": "tsan",
-      "displayName": "TSan / Clang",
-      "inherits": "dev-clang",
-      "environment": {
-        "CXXFLAGS": "-fsanitize=thread -fno-omit-frame-pointer"
       }
     }
   ],
@@ -149,14 +137,56 @@
       "displayName": "MSVC x64 (Release)",
       "configurePreset": "dev-msvc",
       "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "dev-gcc-debug",
+      "displayName": "GCC (Debug)",
+      "configurePreset": "dev-gcc",
+      "configuration": "Debug"
     },
     {
-      "name": "asan",
-      "configurePreset": "asan"
+      "name": "dev-gcc-release",
+      "displayName": "GCC (Release)",
+      "configurePreset": "dev-gcc",
+      "configuration": "Release"
     },
     {
-      "name": "tsan",
-      "configurePreset": "tsan"
+      "name": "dev-clang-debug",
+      "displayName": "Clang (Debug)",
+      "configurePreset": "dev-clang",
+      "configuration": "Debug"
+    },
+    {
+      "name": "dev-clang-release",
+      "displayName": "Clang (Release)",
+      "configurePreset": "dev-clang",
+      "configuration": "Release"
+    },
+    {
+      "name": "dev-clang-libcxx-debug",
+      "displayName": "Clang + libc++ (Debug)",
+      "configurePreset": "dev-clang-libcxx",
+      "configuration": "Debug"
+    },
+    {
+      "name": "dev-clang-libcxx-release",
+      "displayName": "Clang + libc++ (Release)",
+      "configurePreset": "dev-clang-libcxx",
+      "configuration": "Release"
+    },
+    {
+      "name": "dev-msvc-debug",
+      "displayName": "MSVC x64 (Debug)",
+      "configurePreset": "dev-msvc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "dev-msvc-release",
+      "displayName": "MSVC x64 (Release)",
+      "configurePreset": "dev-msvc",
+      "configuration": "Release"
     }
   ]
 }

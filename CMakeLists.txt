@@ -31,6 +31,7 @@ if(PROJECT_IS_TOP_LEVEL)
 
     option(BUILD_EXAMPLE "Build the example" ON)
     option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
+    include(CTest)
     option(ENABLE_INSTALL "Generate install rules" ON)
 else()
     option(EGGS_ASSERT_BUILD_EXAMPLE "Build the example" OFF)
@@ -39,11 +40,13 @@ else()
         "Build as a shared library"
         ${BUILD_SHARED_LIBS}
     )
+    option(EGGS_ASSERT_BUILD_TESTING "Build the test suite" OFF)
     option(EGGS_ASSERT_ENABLE_INSTALL "Generate install rules" OFF)
 
     # Map prefixed options back to the canonical names used below
     set(BUILD_EXAMPLE ${EGGS_ASSERT_BUILD_EXAMPLE})
     set(BUILD_SHARED_LIBS ${EGGS_ASSERT_BUILD_SHARED_LIBS})
+    set(BUILD_TESTING ${EGGS_ASSERT_BUILD_TESTING})
     set(ENABLE_INSTALL ${EGGS_ASSERT_ENABLE_INSTALL})
 endif()
 
@@ -54,7 +57,10 @@ endif()
 add_library(_eggs_assert src/assert.cpp)
 set_target_properties(
     _eggs_assert
-    PROPERTIES EXPORT_NAME Assert OUTPUT_NAME eggs_assert
+    PROPERTIES
+        EXPORT_NAME Assert
+        OUTPUT_NAME eggs_assert
+        VERIFY_INTERFACE_HEADER_SETS ${BUILD_TESTING}
 )
 if(MSVC)
     set_target_properties(
@@ -99,6 +105,13 @@ add_subdirectory(support)
 #
 if(BUILD_EXAMPLE)
     add_subdirectory(example)
+endif()
+
+#
+# Tests
+#
+if(BUILD_TESTING)
+    add_subdirectory(test)
 endif()
 
 #

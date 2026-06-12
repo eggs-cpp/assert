@@ -141,37 +141,129 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Configure (static)
         run: cmake --preset ${{ matrix.preset }} -B build/${{ matrix.preset }}-static
+               -DBUILD_TESTING=ON
 
       - name: Build (static, Debug)
-        run: cmake --build build/${{ matrix.preset }}-static --config Debug
+        id: build_static_debug
+        run: cmake --build build/${{ matrix.preset }}-static --config Debug -- -k 0
 
-      - name: Run example (static, Debug)
-        continue-on-error: true
-        shell: bash
-        run: build/${{ matrix.preset }}-static/example/Debug/eggs_assert_example
+      - name: Run header tests (static, Debug)
+        if: steps.build_static_debug.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-static --build-config Debug
+          --label-regex header --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-static-debug-header.xml
+
+      - name: Run unit tests (static, Debug)
+        if: steps.build_static_debug.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-static --build-config Debug
+          --label-regex unit --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-static-debug-unit.xml
+
+      - name: Run examples (static, Debug)
+        if: steps.build_static_debug.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-static --build-config Debug
+          --label-regex example --verbose --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-static-debug-example.xml
 
       - name: Build (static, Release)
-        run: cmake --build build/${{ matrix.preset }}-static --config Release
+        id: build_static_release
+        if: always()
+        run: cmake --build build/${{ matrix.preset }}-static --config Release -- -k 0
+
+      - name: Run header tests (static, Release)
+        if: steps.build_static_release.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-static --build-config Release
+          --label-regex header --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-static-release-header.xml
+
+      - name: Run unit tests (static, Release)
+        if: steps.build_static_release.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-static --build-config Release
+          --label-regex unit --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-static-release-unit.xml
+
+      - name: Run examples (static, Release)
+        if: steps.build_static_release.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-static --build-config Release
+          --label-regex example --verbose --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-static-release-example.xml
 
       # -----------------------------------------------------------------------
       # Shared library build
       # -----------------------------------------------------------------------
       - name: Configure (shared)
+        if: always()
         run: cmake --preset ${{ matrix.preset }} -B build/${{ matrix.preset }}-shared
-               -DBUILD_SHARED_LIBS=ON
+               -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=ON
 
       - name: Build (shared, Debug)
-        run: cmake --build build/${{ matrix.preset }}-shared --config Debug
+        id: build_shared_debug
+        if: always()
+        run: cmake --build build/${{ matrix.preset }}-shared --config Debug -- -k 0
 
-      - name: Run example (shared, Debug)
-        continue-on-error: true
-        shell: bash
-        run: |
-          [ "$RUNNER_OS" = "Windows" ] && cp build/${{ matrix.preset }}-shared/Debug/*.dll build/${{ matrix.preset }}-shared/example/Debug/
-          build/${{ matrix.preset }}-shared/example/Debug/eggs_assert_example
+      - name: Run header tests (shared, Debug)
+        if: steps.build_shared_debug.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-shared --build-config Debug
+          --label-regex header --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-shared-debug-header.xml
+
+      - name: Run unit tests (shared, Debug)
+        if: steps.build_shared_debug.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-shared --build-config Debug
+          --label-regex unit --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-shared-debug-unit.xml
+
+      - name: Run examples (shared, Debug)
+        if: steps.build_shared_debug.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-shared --build-config Debug
+          --label-regex example --verbose --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-shared-debug-example.xml
 
       - name: Build (shared, Release)
-        run: cmake --build build/${{ matrix.preset }}-shared --config Release
+        id: build_shared_release
+        if: always()
+        run: cmake --build build/${{ matrix.preset }}-shared --config Release -- -k 0
+
+      - name: Run header tests (shared, Release)
+        if: steps.build_shared_release.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-shared --build-config Release
+          --label-regex header --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-shared-release-header.xml
+
+      - name: Run unit tests (shared, Release)
+        if: steps.build_shared_release.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-shared --build-config Release
+          --label-regex unit --output-on-failure --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-shared-release-unit.xml
+
+      - name: Run examples (shared, Release)
+        if: steps.build_shared_release.outcome == 'success'
+        run: >-
+          ctest --test-dir build/${{ matrix.preset }}-shared --build-config Release
+          --label-regex example --verbose --no-compress-output
+          --output-junit test-results-${{ matrix.compiler }}-shared-release-example.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ matrix.compiler }}
+          path: |
+            build/${{ matrix.preset }}-static/test-results-*.xml
+            build/${{ matrix.preset }}-shared/test-results-*.xml
+          if-no-files-found: ignore
+          retention-days: 7
 
       # -----------------------------------------------------------------------
       # FetchContent variant — simulates embedding via FetchContent_MakeAvailable

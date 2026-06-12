@@ -49,7 +49,7 @@ EGGS_ASSERT_EXPORT _Noreturn void eggs_assert_failed(
                        (unsigned)std::source_location::current().line(), \
                        std::source_location::current().function_name()   \
                    ))
-#    elif __has_builtin(__builtin_FILE)
+#    elif defined(__GNUC__) || defined(__clang__)
 #        define assert(...)                                             \
             ((__VA_ARGS__)                                              \
                  ? (void)0                                              \

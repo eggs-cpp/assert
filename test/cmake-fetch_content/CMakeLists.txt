@@ -78,6 +78,6 @@ add_test(
     NAME verify
     COMMAND
         ${CMAKE_COMMAND} -DCMD=$<TARGET_FILE:consumer_verify>
-        -DEXPECT_CRASH=$<CONFIG:Debug> -P
-        "${CMAKE_CURRENT_SOURCE_DIR}/../run_verify.cmake"
+        -DWILL_CRASH=$<CONFIG:Debug> -P
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../support/run_verify.cmake"
 )
