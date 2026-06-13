@@ -107,6 +107,7 @@ jobs:
 
       - name: Configure (static)
         run: cmake --preset ${{ matrix.preset }} -B build/${{ matrix.preset }}-static
+               -DBUILD_DOCS=ON
 
       - name: Build (static, Release)
         run: cmake --build build/${{ matrix.preset }}-static --config Release
@@ -118,6 +119,7 @@ jobs:
       - name: Configure (shared)
         run: cmake --preset ${{ matrix.preset }} -B build/${{ matrix.preset }}-shared
                -DBUILD_SHARED_LIBS=ON
+               -DBUILD_DOCS=OFF
 
       - name: Build (shared, Release)
         run: cmake --build build/${{ matrix.preset }}-shared --config Release

@@ -141,7 +141,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Configure (static)
         run: cmake --preset ${{ matrix.preset }} -B build/${{ matrix.preset }}-static
-               -DBUILD_TESTING=ON
+               -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON
 
       - name: Build (static, Debug)
         id: build_static_debug
@@ -200,7 +200,7 @@ jobs:
       - name: Configure (shared)
         if: always()
         run: cmake --preset ${{ matrix.preset }} -B build/${{ matrix.preset }}-shared
-               -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=ON
+               -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=ON
 
       - name: Build (shared, Debug)
         id: build_shared_debug
@@ -367,4 +367,23 @@ jobs:
         if: github.ref == 'refs/heads/main'
         working-directory: test/cmake-find_package
         run: ctest --test-dir build-consumer-find_package-shared --build-config Debug -V
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure
+        run: cmake --preset dev-gcc -B build/docs -DBUILD_DOCS=ON -DENABLE_INSTALL=ON
+
+      - name: Build docs
+        run: cmake --build build/docs --target docs
+
+      - name: Upload docs
+        uses: actions/upload-artifact@v6
+        with:
+          name: docs
+          path: build/docs/docs/html/
+          if-no-files-found: error
+          retention-days: 7
 

@@ -29,11 +29,13 @@ if(PROJECT_IS_TOP_LEVEL)
         "$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>"
     )
 
+    option(BUILD_DOCS "Build the documentation" ON)
     option(BUILD_EXAMPLES "Build the examples" ON)
     option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
     include(CTest)
     option(ENABLE_INSTALL "Generate install rules" ON)
 else()
+    option(EGGS_ASSERT_BUILD_DOCS "Build the documentation" OFF)
     option(EGGS_ASSERT_BUILD_EXAMPLES "Build the examples" OFF)
     option(
         EGGS_ASSERT_BUILD_SHARED_LIBS
@@ -44,6 +46,7 @@ else()
     option(EGGS_ASSERT_ENABLE_INSTALL "Generate install rules" OFF)
 
     # Map prefixed options back to the canonical names used below
+    set(BUILD_DOCS ${EGGS_ASSERT_BUILD_DOCS})
     set(BUILD_EXAMPLES ${EGGS_ASSERT_BUILD_EXAMPLES})
     set(BUILD_SHARED_LIBS ${EGGS_ASSERT_BUILD_SHARED_LIBS})
     set(BUILD_TESTING ${EGGS_ASSERT_BUILD_TESTING})
@@ -122,6 +125,13 @@ target_include_directories(
 add_library(Eggs::Assert::Intercept ALIAS _eggs_assert_intercept)
 
 add_subdirectory(support)
+
+#
+# Documentation
+#
+if(BUILD_DOCS)
+    add_subdirectory(docs)
+endif()
 
 #
 # Example
