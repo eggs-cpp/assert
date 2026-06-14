@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.25)
 project(
     Eggs.Assert
-    VERSION 1.0.0
+    VERSION 1.1.0
     DESCRIPTION "A C++23 assert library with stacktrace"
     LANGUAGES C CXX
 )
